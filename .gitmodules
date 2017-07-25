@@ -1,3 +1,6 @@
 [submodule "base"]
 	path = base
 	url = https://github.com/SubstanceMobile/kide-base
+[submodule ".sdk"]
+	path = .sdk
+	url = https://github.com/SubstanceMobile/SDK
