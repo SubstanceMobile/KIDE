@@ -1,0 +1,19 @@
+{
+  "name": "ide-kotlin",
+  "version": "0.0.0",
+  "main": "index",
+  "description": "Provides syntax highlighting and code-based functionality for KIDE",
+  "repository": "https://github.com/SubstanceMobile/KIDE/tree/master/lang-kotlin",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "providedServices": {
+    "autocomplete.provider": {
+      "versions": {
+        "2.0.0": "provideKDocCompletion"
+      }
+    }
+  },
+  "dependencies": {}
+}

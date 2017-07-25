@@ -1,0 +1,4 @@
+'.source.kotlin':
+  'editor':
+    'commentStart': '// '
+    'foldEndPattern': '^\\s*(\\}|// \\}\\}\\}$)'
