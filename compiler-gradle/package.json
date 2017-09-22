@@ -1,0 +1,23 @@
+{
+  "name": "compiler-gradle",
+  "version": "0.0.0",
+  "main": "./lib/index",
+  "description": "Provides Gradle integration with Atom and the KIDE",
+  "repository": "https://github.com/SubstanceMobile/KIDE/tree/master/compiler-gradle",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "keywords": [
+    "gradle",
+    "build",
+    "KIDE",
+    "compiler",
+    "java",
+    "kotlin"
+  ],
+  "dependencies": {
+    "fs-plus": "*",
+    "download": "*"
+  }
+}
