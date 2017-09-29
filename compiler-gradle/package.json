@@ -16,8 +16,18 @@
     "java",
     "kotlin"
   ],
+  "consumedServices": {
+    "atom-ide-busy-signal": {
+      "versions": {
+        "0.1.0": "consumeBusySignal"
+      }
+    }
+  },
   "dependencies": {
+    "atom-space-pen-views": "^2.2.0",
+    "bin-check": "^4.1.0",
+    "download": "*",
     "fs-plus": "*",
-    "download": "*"
+    "which": "^1.3.0"
   }
 }

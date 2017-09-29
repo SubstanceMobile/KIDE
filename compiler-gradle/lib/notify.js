@@ -1,3 +1,4 @@
+// Adds some simple wrapper functions for notifications
 module.exports = {
   enabled: function () {
     return atom.config.get("compiler-gradle.notify");

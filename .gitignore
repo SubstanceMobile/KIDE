@@ -1,2 +1,3 @@
 build-fusion/
 */node_modules/
+.gradle/

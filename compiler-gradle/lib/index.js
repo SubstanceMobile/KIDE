@@ -1,8 +1,13 @@
-const {CompositeDisposable, BufferedProcess} = require('atom');
+const {CompositeDisposable} = require('atom');
 const path = require('path');
-const fs = require('fs-plus');
-const download = require('download');
+const taskPick = require("./ui/task-input");
+
+// Modules
 const notify = require('./notify');
+const gradle = require('./gradle');
+const update = require('./update');
+const spinner = require('./spinner');
+const which = require('./which');
 
 module.exports = {
   config: {
@@ -26,9 +31,9 @@ module.exports = {
       properties: {
         location: {
           type: 'string',
-          default: 'download',
+          default: 'auto',
           title: "Gradle path",
-          description: "Where is the gradle executable located. Put \'download\' to automatically download and update Gradle through KIDE"
+          description: "Where is the gradle executable located. Put \'auto\' to try and find a gradle binary automatically or download gradle if not found"
         },
         nightly: {
           type: 'boolean',
@@ -90,11 +95,44 @@ module.exports = {
     }
   },
 
-  activate: function() {
+  activate: () => {
+      this.subscriptions = new CompositeDisposable();
+
       notify.activate();
+      gradle.activate();
+      update.activate();
+
+      this.subscriptions.add(atom.config.onDidChange("compiler-gradle.updates.nightly", value => {
+        if (!value) { //TODO: Necessary?
+          update.purgeBinary()
+          notify.info("Downgrading to stable version of Gradle", {icon: "history"});
+        }
+        update.check()
+      }));
+
+      this.subscriptions.add(atom.commands.add("atom-workspace", {
+        'build:run': () => gradle.runTask(atom.config.get("compiler-gradle.tasks.runTask")),
+        'build:debug': () => notify.error("Debug support coming soon!"),
+        'build:release': () => gradle.runTask(atom.config.get("compiler-gradle.tasks.releaseTask")),
+        'build:task': () => taskPick(tasks => gradle.runTask(tasks)),
+        'build:wrapper': () => gradle.runTask("wrapper"),
+        'build:stop': () => gradle.cancel(),
+        'build:update': () => update.check(),
+        'build:reload-binary': () => which.reset()
+      })); //TODO: Hooks to allow other plugins to manage some of this behaviour (for example, SDK plugin inserting a platform picker into Substance SDK projects)
   },
 
-  deactivate: function() {
+  consumeBusySignal: (signal) => {
+    spinner.init(signal);
+    which.activate();
+  },
+
+  deactivate: () => {
     notify.deactivate();
+    gradle.deactivate();
+    update.deactivate();
+
+    this.subscriptions.dispose(); // Release resources
+    if (atom.packages.isPackageDisabled("compiler-gradle")) update.purgeBinary();
   }
 };
