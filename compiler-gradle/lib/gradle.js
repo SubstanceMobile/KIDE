@@ -29,10 +29,10 @@ module.exports = gradle = {
         args: ['--console','plain']/*.concat(atom.config.get())*/.concat(args)/*.concat(atom.config.get())*/,
         options: {cwd: dir.getPath(), env: process.env},
         stdout: output => {
-          console.log(`Build Output: ${output}`) //TODO: Outputview
-
+          console.log(`Build Output: ${output}`)
+          //TODO: Outputview
           try {
-            //TODO: Communicate with Gradle client for this data
+            //TODO: Gradle client
             taskName = output.match(taskRegex)[1]
             if (taskName) spinner.status(`Running task: ${taskName}`)
           } catch (ignored) {}
