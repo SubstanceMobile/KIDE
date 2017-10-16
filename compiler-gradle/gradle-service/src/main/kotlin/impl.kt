@@ -151,7 +151,7 @@ fun runTasks(tasks: Array<String>) {
       }
    }
 
-   val build = connection!!.newBuild().forTasks(*tasks).withArguments("--console", "plain", "-q") // Create a build
+   val build = connection!!.newBuild().forTasks(*tasks).withArguments("--console", "plain") // Create a build
    build.addProgressListener(taskListener, OperationType.TASK) // Configure progress listeners
    build.setStandardOutput(GradlePrinter(System.out)).setStandardError(GradlePrinter(System.err)) // Configure IO
    build.withCancellationToken(cancellation.token()) // Link the cancel command
