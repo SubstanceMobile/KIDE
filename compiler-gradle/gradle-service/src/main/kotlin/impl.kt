@@ -83,6 +83,8 @@ fun project(path: String, params: Map<String, String>) {
    gradleProj = safeCall<GradleProject> {
       connection?.getModel(GradleProject::class.java)
    }
+
+   status(Codes.READY)
 }
 
 fun getGradleVersion() = if (env == null) {
@@ -215,7 +217,7 @@ class GradlePrinter(val stream: PrintStream): OutputStream() {
 }
 
 fun String.jsonKeepSpace() = this.replace("\\s".toRegex(), "\uFFFD")
-fun String.formatJSON() = this.replace("\\s".toRegex(), "").replace("\"", "\\\"").replace("\uFFFD", " ").trimIndent().trim()
+fun String.formatJSON() = this.replace("\\s".toRegex(), "").replace("\uFFFD", " ").trimIndent().trim()
 
 fun <T: Any?> safeCall(func: () -> T?): T? {
    try { return func() } catch (ignored: Exception) { return null }
