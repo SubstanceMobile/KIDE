@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 cd `dirname $0`
 echo "status; 240" # building; notify the ide to ignore all of the stuff going on afterwards and to send errors as notifications
 ./gradlew -q shadowJar --console plain
