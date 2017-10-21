@@ -35,6 +35,7 @@ object Codes {
    val PROJECT_CLOSED =          0x05
    val NO_BUILD_RUNNING =        0x06
    val BUILD_STARTING =          0x07
+   val PROJECT_OPENED =          0x08
 }
 
 fun getCodes() = """
@@ -51,7 +52,8 @@ fun getCodes() = """
    "NO_PROJECT_CONNECTION": ${Codes.NO_PROJECT_CONNECTION},
    "PROJECT_CLOSED": ${Codes.PROJECT_CLOSED},
    "NO_BUILD_RUNNING": ${Codes.NO_BUILD_RUNNING},
-   "BUILD_STARTING": ${Codes.BUILD_STARTING}
+   "BUILD_STARTING": ${Codes.BUILD_STARTING},
+   "PROJECT_OPENED": ${Codes.PROJECT_OPENED}
 }
 """.formatJSON()
 
@@ -84,7 +86,7 @@ fun project(path: String, params: Map<String, String>) {
       connection?.getModel(GradleProject::class.java)
    }
 
-   status(Codes.READY)
+   status(Codes.PROJECT_OPENED)
 }
 
 fun getGradleVersion() = if (env == null) {

@@ -12,7 +12,7 @@ module.exports = {
     if (inst) {
       inst.setTitle(text)
     } else {
-      inst = spinner.reportBusy(text)
+      inst = spinner.reportBusy(text, {revealTooltip: true})
     }
   },
   stop: () => {

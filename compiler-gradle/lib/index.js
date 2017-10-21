@@ -4,10 +4,12 @@ const taskPick = require("./ui/task-input");
 
 // Modules
 const notify = require('./notify');
-const gradle = require('./gradle');
-const update = require('./update');
 const spinner = require('./spinner');
-const which = require('./which');
+const service = require('./service');
+
+//const update = require('./update'); //TODO
+//const gradle = require('./gradle'); //TODO
+//const which = require('./which'); // TODO
 
 module.exports = {
   config: {
@@ -99,40 +101,30 @@ module.exports = {
       this.subscriptions = new CompositeDisposable();
 
       notify.activate();
-      gradle.activate();
-      update.activate();
+      setTimeout(service.activate, 1) // NOTE: For some reason this fixes javac errors
 
-      this.subscriptions.add(atom.config.onDidChange("compiler-gradle.updates.nightly", value => {
-        if (!value) { //TODO: Necessary?
-          update.purgeBinary()
-          notify.info("Downgrading to stable version of Gradle", {icon: "history"});
-        }
-        update.check()
-      }));
+      this.subscriptions.add(atom.workspace.onDidChangeActiveTextEditor(editor => {
+        if (editor == undefined) service.closeProject(); else service.updateProject();
+      }))
 
       this.subscriptions.add(atom.commands.add("atom-workspace", {
-        'build:run': () => gradle.runTask(atom.config.get("compiler-gradle.tasks.runTask")),
+        'build:run': () => service.runTask(atom.config.get("compiler-gradle.tasks.runTask")), // TODO: Interactive
         'build:debug': () => notify.error("Debug support coming soon!"),
-        'build:release': () => gradle.runTask(atom.config.get("compiler-gradle.tasks.releaseTask")),
-        'build:task': () => taskPick(tasks => gradle.runTask(tasks)),
-        'build:wrapper': () => gradle.runTask("wrapper"),
-        'build:stop': () => gradle.cancel(),
-        'build:update': () => update.check(),
-        'build:reload-binary': () => which.reset()
+        'build:release': () => service.runTask(atom.config.get("compiler-gradle.tasks.releaseTask")),
+        'build:task': () => taskPick(tasks => service.runTask(tasks)),
+        'build:wrapper': () => service.runTask("wrapper"),
+        'build:stop': () => service.cancel()
       })); //TODO: Hooks to allow other plugins to manage some of this behaviour (for example, SDK plugin inserting a platform picker into Substance SDK projects)
   },
 
   consumeBusySignal: (signal) => {
     spinner.init(signal);
-    which.activate();
   },
 
   deactivate: () => {
+    service.deactivate();
     notify.deactivate();
-    gradle.deactivate();
-    update.deactivate();
-
+    spinner.stop()
     this.subscriptions.dispose(); // Release resources
-    if (atom.packages.isPackageDisabled("compiler-gradle")) update.purgeBinary();
   }
 };
