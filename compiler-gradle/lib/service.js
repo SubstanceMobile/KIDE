@@ -207,6 +207,7 @@ module.exports = service = {
   },
   closeProject: () => {
     service.sendCommand("closeProject")
+    service.lastDir = ""
     //waitForStatus(Codes.PROJECT_CLOSED) TODO: Handle if an error happens
   },
   getGradleVersion: () => {
