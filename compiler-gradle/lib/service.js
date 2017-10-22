@@ -181,7 +181,9 @@ module.exports = service = {
     //waitForStatus(Codes.READY) TODO: Handle if an error happens
   },
   runTask: tasks => {
-    service.sendCommand(`task; ${[].concat(tasks).join(", ")}`)
+    before = atom.config.get("compiler-gradle.tasks.defaultTasksBefore")
+    after = atom.config.get("compiler-gradle.tasks.defaultTasksAfter")
+    service.sendCommand(`task; ${before.concat(tasks).concat(after).join(", ")}`)
   },
   cancel: () => {
     service.sendCommand("cancel")
