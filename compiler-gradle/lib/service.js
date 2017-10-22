@@ -4,6 +4,7 @@ const issue = require('github-create-issue');
 
 const spinner = require('./spinner');
 const notify = require('./notify');
+const output = require('./ui/console-output');
 const uvrun2 = require("../node_modules/uvrun2"); // Used to wait for the return value
 
 const GIHUB_ISSUE_TOKEN = "a44caa5040ef862d39c27802af14ffb376bb6c50" //TODO: Make bot account
@@ -15,6 +16,7 @@ var Codes = { // These Codes are only present during the startup sequence. The t
 }
 
 stopSpinner = () => setTimeout(() => spinner.stop(), 3000)
+closeOutput = () => setTimeout(() => output.close(), 3000)
 
 module.exports = service = {
   /////////////////////////////////////////////////////////////////////////////
@@ -42,6 +44,7 @@ module.exports = service = {
           case Codes.BUILD_SUCCESSFUL:
             notify.success("Gradle build complete")
             stopSpinner()
+            closeOutput()
             break;
           case Codes.BUILD_FAILED:
             notify.error("Gradle build failed", {detail: "Please check the console"}) //TODO: Output view
@@ -71,6 +74,7 @@ module.exports = service = {
         break;
       case "output":
         console[error ? "error" : "log"](`Gradle output: ${data}`)
+        output.add(data, error)
         break;
       case "error":
         switch (parseInt(data)) {
@@ -145,7 +149,9 @@ module.exports = service = {
     return value
   },
   waitForStatus: code => {
-    let value = service.lastStatus.accept()
+    let value = service.lastStatus.accept()  /////////////////////////////////////////////////////////////////////////////
+  // Language
+  /////////////////////////////////////////////////////////////////////////////
     service.lastStatus = new uvrun2.waitFor()
     if (value == code) return; else service.waitForStatus(code)
   },
@@ -187,12 +193,17 @@ module.exports = service = {
     //waitForStatus(Codes.READY) TODO: Handle if an error happens
   },
   runTask: tasks => {
+    output.reset()
+    output.open()
     before = atom.config.get("compiler-gradle.tasks.defaultTasksBefore")
     after = atom.config.get("compiler-gradle.tasks.defaultTasksAfter")
     service.sendCommand(`task; ${before.concat(tasks).concat(after).join(", ")}`)
   },
   cancel: () => {
     service.sendCommand("cancel")
+  },
+  hardCancel: () => {
+    if (service.proc) service.proc.kill()
   },
   closeProject: () => {
     service.sendCommand("closeProject")

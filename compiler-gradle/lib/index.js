@@ -1,7 +1,9 @@
 const {CompositeDisposable} = require('atom');
 const path = require('path');
-//const taskPick = require("./ui/task-input");
+
+// UI
 const taskPick = require("./ui/task-picker");
+const output = require('./ui/console-output');
 
 // Modules
 const notify = require('./notify');
@@ -14,7 +16,8 @@ module.exports = {
       this.subscriptions = new CompositeDisposable();
 
       notify.activate();
-      setTimeout(service.activate, 1) // NOTE: For some reason this fixes javac errors
+      setTimeout(service.activate, 1) // NOT: For some reason this fixes javac errors
+      output.activate()
 
       this.subscriptions.add(atom.workspace.onDidChangeActiveTextEditor(editor => {
         if (editor == undefined) service.closeProject(); else service.updateProject();
@@ -26,7 +29,12 @@ module.exports = {
         'build:release': () => service.runTask(atom.config.get("compiler-gradle.tasks.releaseTask")),
         'build:tasks': () => taskPick(service.getTasks(), tasks => service.runTask(tasks)),
         'build:wrapper': () => service.runTask("wrapper"),
-        'build:stop': () => service.cancel()
+        'build:reload': () => {
+          service.hardCancel()
+          service.activate()
+        },
+        'build:stop': () => service.cancel(),
+        'build:hard-stop': () => service.hardCancel()
       })); //TODO: Hooks to allow other plugins to manage some of this behaviour (for example, SDK plugin inserting a platform picker into Substance SDK projects)
   },
 
@@ -37,6 +45,7 @@ module.exports = {
   deactivate: () => {
     service.deactivate();
     notify.deactivate();
+    output.deactivate();
     spinner.stop()
     this.subscriptions.dispose(); // Release resources
   }
