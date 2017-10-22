@@ -6,7 +6,7 @@ const spinner = require('./spinner');
 const notify = require('./notify');
 const uvrun2 = require("../node_modules/uvrun2"); // Used to wait for the return value
 
-const GIHUB_ISSUE_TOKEN = "a44caa5040ef862d39c27802af14ffb376bb6c50" //TODO: Make bot account //NOTE: Make sure can only access public repos
+const GIHUB_ISSUE_TOKEN = "a44caa5040ef862d39c27802af14ffb376bb6c50" //TODO: Make bot account
 const API_VER = 1
 var Codes = { // These Codes are only present during the startup sequence. The tool then provides its own defenitions
   BUILDING: 240,
@@ -48,11 +48,16 @@ module.exports = service = {
             stopSpinner()
             break;
           case Codes.READY:
+            spinner.stop() // Stop the "setting up gradle" spinner
             service.updateProject() // Load up the first project
             break;
           case Codes.BUILDING:
-          case Codes.RUNNING:
+            spinner.status("Setting up Gradle...")
+            break;
           case Codes.CANCELLING_BUILD:
+            spinner.status("Stopping Build")
+            break;
+          case Codes.RUNNING:
           case Codes.PROJECT_CLOSED:
           case Codes.BUILD_STARTING:
           case Codes.PROJECT_OPENED:
@@ -88,6 +93,7 @@ module.exports = service = {
             break;
           case Codes.NO_PROJECT_CONNECTION:
             notify.error("Gradle client is unaware of the current project", {
+              detail: "Try opening Settings and then going back to this tab",
               buttons: [{
                   text: "Report issue",
                   onDidClick: () => service.postIssue("No Project")

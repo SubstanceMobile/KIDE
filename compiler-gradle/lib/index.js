@@ -1,6 +1,7 @@
 const {CompositeDisposable} = require('atom');
 const path = require('path');
-const taskPick = require("./ui/task-input");
+//const taskPick = require("./ui/task-input");
+const taskPick = require("./ui/task-picker");
 
 // Modules
 const notify = require('./notify');
@@ -23,7 +24,7 @@ module.exports = {
         'build:run': () => service.runTask(atom.config.get("compiler-gradle.tasks.runTask")), // TODO: Interactive
         'build:debug': () => notify.error("Debug support coming soon!"),
         'build:release': () => service.runTask(atom.config.get("compiler-gradle.tasks.releaseTask")),
-        'build:task': () => taskPick(tasks => service.runTask(tasks)),
+        'build:tasks': () => taskPick(service.getTasks(), tasks => service.runTask(tasks)),
         'build:wrapper': () => service.runTask("wrapper"),
         'build:stop': () => service.cancel()
       })); //TODO: Hooks to allow other plugins to manage some of this behaviour (for example, SDK plugin inserting a platform picker into Substance SDK projects)

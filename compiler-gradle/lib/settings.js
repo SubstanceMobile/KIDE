@@ -12,14 +12,14 @@ module.exports = {
     title: "Use gradlew",
     description: "Use the Gradle Wrapper if it is present in the current project. This allows projects designed for older versions of Gradle to compile properly.",
     order: 2
-  },
+  },/*
   nightly: { // TODO
     type: 'boolean',
     default: false,
     title: "Nightly",
     description: "Use nightly builds of Gradle",
-    order: 4
-  },
+    order: 3
+  },*/
   tasks: {
     type: 'object',
     order: 4,
