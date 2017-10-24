@@ -7,7 +7,7 @@ const notify = require('./notify');
 const output = require('./ui/console-output');
 const uvrun2 = require("../node_modules/uvrun2"); // Used to wait for the return value
 
-const GIHUB_ISSUE_TOKEN = "a44caa5040ef862d39c27802af14ffb376bb6c50" //TODO: Make bot account
+const GIHUB_ISSUE_TOKEN = "f788d2d9934458a5b3533d9d7586e71d58241578" //TODO: Make bot account
 const API_VER = 1
 var Codes = { // These Codes are only present during the startup sequence. The tool then provides its own defenitions
   BUILDING: 240,
