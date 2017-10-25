@@ -15,7 +15,7 @@ module.exports = output = {
     pane.updateScroll() // Scroll to bottom
   },
   open: () => pane.unfold(),
-  close: () => {
+  close: () => { // TODO: Cancel timeout on hover
     if (!pane.folded) pane.toggle()
   },
   toggle: () => pane.toggle(),
@@ -34,7 +34,7 @@ module.exports = output = {
 
       pane.btnClose.hide() // Hide the close button
       pane.btnFold.hide() // Hide the collapse button
-      tooltip = atom.tooltips.add(pane.btnAutoScroll, {title: "Automatic Scrolling"})
+      tooltip = atom.tooltips.add(pane.btnAutoScroll, {title: "Automatic Scrolling"}) // Add tooltip
       pane.heading.parent().click(pane.heading.handlers("click")[0].handler) // Make the whole panel click to expand
       pane.heading.handlers("click").pop() // Fix clicking on title
 

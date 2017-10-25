@@ -63,7 +63,7 @@ module.exports = service = {
             spinner.status("Stopping Build")
             break;
           case Codes.RUNNING:
-            service.isBuildingClient = false
+            setTimeout(() => service.isBuildingClient = false, 1000) // Give it a second to flush its buffers
             break;
           case Codes.PROJECT_CLOSED:
           case Codes.BUILD_STARTING:
