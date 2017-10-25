@@ -4,6 +4,7 @@ const path = require('path');
 // UI
 const taskPick = require("./ui/task-picker");
 const output = require('./ui/console-output');
+const runner = require('./ui/runner');
 
 // Modules
 const notify = require('./notify');
@@ -16,7 +17,7 @@ module.exports = {
       this.subscriptions = new CompositeDisposable();
 
       notify.activate();
-      setTimeout(service.activate, 1) // NOT: For some reason this fixes javac errors
+      service.activate()
       output.activate()
 
       this.subscriptions.add(atom.workspace.onDidChangeActiveTextEditor(editor => {
@@ -38,9 +39,9 @@ module.exports = {
       })); //TODO: Hooks to allow other plugins to manage some of this behaviour (for example, SDK plugin inserting a platform picker into Substance SDK projects)
   },
 
-  consumeBusySignal: (signal) => {
-    spinner.init(signal);
-  },
+  consumeBusySignal: signal => spinner.init(signal),
+
+  consumeRunner: signal => runner.init(signal),
 
   deactivate: () => {
     service.deactivate();

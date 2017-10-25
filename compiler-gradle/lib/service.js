@@ -53,14 +53,18 @@ module.exports = service = {
           case Codes.READY:
             spinner.stop() // Stop the "setting up gradle" spinner
             service.updateProject() // Load up the first project
+            service.isReady = true
             break;
           case Codes.BUILDING:
             spinner.status("Setting up Gradle...")
+            service.isBuildingClient = true
             break;
           case Codes.CANCELLING_BUILD:
             spinner.status("Stopping Build")
             break;
           case Codes.RUNNING:
+            service.isBuildingClient = false
+            break;
           case Codes.PROJECT_CLOSED:
           case Codes.BUILD_STARTING:
           case Codes.PROJECT_OPENED:
@@ -128,7 +132,7 @@ module.exports = service = {
         // Do nothing
         break;
       default:
-        notify.error("Gradle client issued an invalid command", {
+        if (!service.isBuildingClient) notify.error("Gradle client issued an invalid command", {
           detail: `Command: ${command}`,
           buttons: [{
               text: "Report issue",
@@ -226,6 +230,7 @@ module.exports = service = {
   activate: () => {
       service.history = service.history ? service.history + "\n--------------------------------\n" : ""
       service.lastCommand = ""
+      service.isReady = false
       service.lastReturn = new uvrun2.waitFor()
       service.lastStatus = new uvrun2.waitFor()
       service.proc = new BufferedProcess({
