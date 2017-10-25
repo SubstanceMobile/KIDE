@@ -28,20 +28,23 @@ module.exports = output = {
   activate: () => {
     if (!pane) {
       pane = new MessagePanelView({
-        title: '<span class="icon-file"></span> Gradle Output',
-        rawTitle: true
+        title: '<span class="icon-file"></span> Build Output',
+        rawTitle: true,
+        maxHeight: 240
       })
 
       pane.btnClose.hide() // Hide the close button
       pane.btnFold.hide() // Hide the collapse button
       tooltip = atom.tooltips.add(pane.btnAutoScroll, {title: "Automatic Scrolling"}) // Add tooltip
-      pane.heading.parent().click(pane.heading.handlers("click")[0].handler) // Make the whole panel click to expand
+      pane.heading.parent().click(e => {
+        if (e.target != pane.btnAutoScroll[0] || pane.folded) pane.toggle()
+      }) // Make the whole header click to expand
       pane.heading.handlers("click").pop() // Fix clicking on title
 
       pane.attach()
       output.close()
     }
-    output.add("No build was run yet", false)
+    output.add("No build was run yet", false) // Add a default text
   },
   deactivate: () => {
     pane.close()
