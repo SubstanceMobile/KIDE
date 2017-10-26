@@ -192,7 +192,7 @@ fun closeProject() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class GradlePrinter(val stream: PrintStream): OutputStream() {
-  var output: String = ""
+  var output = ""
   var firstLine = true
 
   override fun write(byte: Int) {
@@ -212,8 +212,7 @@ class GradlePrinter(val stream: PrintStream): OutputStream() {
          output = "output; $output"
          firstLine = false
       }
-      output = output.replace("\n", "\noutput; ")
-      stream.print("$output")
+      stream.print(output.replace("\n", "\noutput; "))
       output = "" // Clear out the buffer
    }
 }

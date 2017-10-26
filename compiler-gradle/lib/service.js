@@ -25,7 +25,6 @@ module.exports = service = {
 
   processCommand: (input, error) => {
     service.history += input.endsWith("\n") ? input : `${input}\n`
-    //console.log("Gradle Service: " + input)
     let command = input.split(";")[0].split(",")[0].trim()
     let modifiers = input.replace(command, "").replace(",", "").trim().split(";")[0].split(",").map(mod => mod.trim())
     var data = input.split(";"); data.shift(); data = data.join(";").trim()

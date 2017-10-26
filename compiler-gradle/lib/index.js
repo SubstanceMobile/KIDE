@@ -17,7 +17,7 @@ module.exports = {
       this.subscriptions = new CompositeDisposable();
 
       notify.activate();
-      service.activate()
+      setTimeout(service.activate, 1000) // Give the IDE a second to suppress errors
       output.activate()
 
       this.subscriptions.add(atom.workspace.onDidChangeActiveTextEditor(editor => {
