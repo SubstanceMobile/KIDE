@@ -153,9 +153,7 @@ module.exports = service = {
     return value
   },
   waitForStatus: code => {
-    let value = service.lastStatus.accept()  /////////////////////////////////////////////////////////////////////////////
-  // Language
-  /////////////////////////////////////////////////////////////////////////////
+    let value = service.lastStatus.accept()
     service.lastStatus = new uvrun2.waitFor()
     if (value == code) return; else service.waitForStatus(code)
   },
