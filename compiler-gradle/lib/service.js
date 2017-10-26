@@ -47,7 +47,7 @@ module.exports = service = {
             closeOutput()
             break;
           case Codes.BUILD_FAILED:
-            notify.error("Gradle build failed", {detail: "Please check the console"}) //TODO: Output view
+            notify.error("Gradle build failed", {detail: "Please check the Build Output"})
             stopSpinner()
             break;
           case Codes.READY:
