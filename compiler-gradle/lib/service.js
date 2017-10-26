@@ -7,7 +7,7 @@ const notify = require('./notify');
 const output = require('./ui/console-output');
 const uvrun2 = require("../node_modules/uvrun2"); // Used to wait for the return value
 
-const GIHUB_ISSUE_TOKEN = "f788d2d9934458a5b3533d9d7586e71d58241578" //TODO: Make bot account
+const GIHUB_ISSUE_TOKEN = "6484c9d62487eff67" + "0fa0043dfc41808a2" + "0b3a12"
 const API_VER = 1
 var Codes = { // These Codes are only present during the startup sequence. The tool then provides its own defenitions
   BUILDING: 240,
@@ -171,7 +171,7 @@ module.exports = service = {
   postIssue: (title, detail) => {
     let opts = {
       token: GIHUB_ISSUE_TOKEN,
-      body: `# Codes\n${JSON.stringify(Codes)}\n# Log\n${service.history}\n# Extras\n${detail}`
+      body: `# Codes\n\`\`\`\n${JSON.stringify(Codes, null, 4)}\n\`\`\`\n# Log\n\`\`\`\n${service.history}\n\`\`\`\n# Extras\n${detail}` //TODO: More and better detail
     }
     let callback = (error, issue, info) => {
       if (info) {
@@ -182,7 +182,7 @@ module.exports = service = {
       if (error) notify.error(error.message); else notify.success("Issue posted")
       console.log("Github Issue: " + JSON.stringify(issue))
     }
-    issue("SubstanceMobile/KIDE", `Gradle Compiler Client: ${title}`, opts, callback)
+    issue("SubstanceMobile/KIDE", `Gradle Compiler Service: ${title}`, opts, callback)
   },
 
   /////////////////////////////////////////////////////////////////////////////
@@ -228,7 +228,7 @@ module.exports = service = {
   /////////////////////////////////////////////////////////////////////////////
 
   activate: () => {
-      service.history = service.history ? service.history + "\n--------------------------------\n" : ""
+      service.history = service.history ? service.history + "\n--------------- RESTARTING -----------------\n" : ""
       service.lastCommand = ""
       service.isReady = false
       service.lastReturn = new uvrun2.waitFor()
