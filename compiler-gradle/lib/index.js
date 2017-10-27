@@ -4,7 +4,6 @@ const path = require('path');
 // UI
 const taskPick = require("./ui/task-picker");
 const output = require('./ui/console-output');
-const runner = require('./ui/runner');
 
 // Modules
 const notify = require('./notify');
@@ -40,8 +39,6 @@ module.exports = {
   },
 
   consumeBusySignal: signal => spinner.init(signal),
-
-  consumeRunner: signal => runner.init(signal),
 
   deactivate: () => {
     service.deactivate();
