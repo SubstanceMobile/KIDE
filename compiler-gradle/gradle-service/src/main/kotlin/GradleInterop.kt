@@ -48,6 +48,8 @@ fun main(args: Array<String>) {
             break@listen
          }
 
+         "tell" -> tell(text = data)
+
          "project" -> project(path = data, params = parameters)
          "task" -> runTasks(tasks = data.split(",").map {it.trim()}.toTypedArray())
          "cancel" -> cancel()
@@ -79,7 +81,7 @@ fun test(command: String, data: String, flags: List<String>, params: Map<String,
 
 fun setup(module: String, data: String) = println("setup, $module; $data") // Prep the IDE to recieve data to set up communications with this tool
 fun status(code: Int) = println("status; $code") // Send the IDE a status code
-fun display(status: String) = println("disp; $status") // Tell the IDE to display some status text
+fun display(status: String) = println("\ndisp; $status") // Tell the IDE to display some status text
 fun error(code: Int) = println("error; $code") // Notify the IDE of an error
 fun ret(value: String) = println("return; $value") // Send data back to the IDE
 

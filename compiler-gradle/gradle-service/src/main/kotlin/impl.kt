@@ -156,12 +156,17 @@ fun runTasks(tasks: Array<String>) {
    val build = connection!!.newBuild().forTasks(*tasks).withArguments("--console", "plain") // Create a build
    build.addProgressListener(taskListener, OperationType.TASK) // Configure progress listeners
    build.setStandardOutput(GradlePrinter(System.out)).setStandardError(GradlePrinter(System.err)) // Configure IO
+
+   // TODO: Stdin
+
    build.withCancellationToken(cancellation.token()) // Link the cancel command
    status(Codes.BUILD_STARTING)
    display("Gradle build starting...")
    build.run(exitHandler);
    building = true
 }
+
+fun tell(text: String) = "" //TODO
 
 fun cancel(quiet: Boolean = false) {
    if (!building) {
