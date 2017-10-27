@@ -9,3 +9,6 @@ atom.workspace.updateWindowTitle = function() {
 global.kide = {
 
 }
+
+
+ //https://github.com/stefanbirkner/system-rules/blob/master/src/main/java/org/junit/contrib/java/lang/system/TextFromStandardInputStream.java
