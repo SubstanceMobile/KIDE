@@ -27,7 +27,7 @@ module.exports = {
         'build:run': () => service.runTask(atom.config.get("compiler-gradle.tasks.runTask")), // TODO: Interactive
         'build:debug': () => notify.error("Debug support coming soon!"),
         'build:release': () => service.runTask(atom.config.get("compiler-gradle.tasks.releaseTask")),
-        'build:tasks': () => taskPick(service.getTasks(), tasks => service.runTask(tasks)),
+        'build:tasks': () => service.getTasks().then(data => taskPick(data, tasks => service.runTask(tasks))),
         'build:wrapper': () => service.runTask("wrapper"),
         'build:reload': () => {
           service.hardCancel()

@@ -16,8 +16,9 @@ fun main(args: Array<String>) {
    status(Codes.READY)
 
    listen@ while (true) {
+
       // Process the input to parse commands
-      var ln = input() ?: ""
+      var ln = input() ?: break@listen // Prevent this tool from "running away" if disconnected from the IDE
       if (ln.split(";").size < 2) ln += ";" // Add the ; if the command is missing it (make this tool human-proof)
       val command = ln.split(";")[0].split(",")[0].trim()
       val modifiers = ln.removePrefix(command).removePrefix(",").trim().split(";")[0].split(",").map { it.trim() }.filter { it != "" }

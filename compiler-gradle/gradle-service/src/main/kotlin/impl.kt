@@ -17,6 +17,7 @@ import java.io.OutputStream
 // Status and error codes
 // 0xF* = API Code
 // 0x0* = Implementation Code
+// 0x00 = Reserved for IDE default state
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 object Codes {

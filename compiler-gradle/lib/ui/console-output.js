@@ -1,4 +1,3 @@
-
 const MessagePanelView = require('atom-message-panel').MessagePanelView;
 const PlainMessageView = require('atom-message-panel').PlainMessageView;
 
