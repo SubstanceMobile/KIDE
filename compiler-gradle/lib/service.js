@@ -125,9 +125,10 @@ state = { // State management
   queueListener: -1, // The ID for the interval that issues commands from the queue
 
   // Project management
+  projectClosed: true,
   lastDir: "", // The last open directory
   updateProject: () => {
-    dir = atom.project.getDirectories().filter(d => d.contains(atom.workspace.getActiveTextEditor().getPath()))[0].getPath();
+    dir = path.dirname(atom.workspace.getActiveTextEditor().getPath())
     if (dir == state.lastDir) return
     state.lastDir = dir
     language.send(`project; ${dir}`) // TODO: Version
@@ -168,7 +169,9 @@ impl = { // Command implementations
         break;
       case Codes.READY:
         spinner.stop() // Stop the "setting up gradle" spinner
-        state.updateProject() // Load up the first project
+        if (atom.workspace.getActiveTextEditor() != undefined) {
+            state.updateProject() // Load up the first project
+        }
         state.isReady = true
         break;
       case Codes.BUILDING:
@@ -184,8 +187,12 @@ impl = { // Command implementations
         }, 1000) // Allow time to flush out buffers
         break;
       case Codes.PROJECT_CLOSED:
-      case Codes.BUILD_STARTING:
+        state.projectClosed = true
+        break;
       case Codes.PROJECT_OPENED:
+        state.projectClosed = false
+        break;
+      case Codes.BUILD_STARTING:
       default:
         // Do nothing. Can later be activated to tune behaviour
     }
@@ -212,13 +219,14 @@ impl = { // Command implementations
         })
         break;
       case Codes.NO_PROJECT_CONNECTION:
-        notify.error("Gradle client is unaware of the current project", {
-          detail: "Try opening Settings and then going back to this tab",
-          buttons: [{
-              text: "Report issue",
-              onDidClick: () => postIssue("No Project")
-          }]
-        })
+        if (state.lastCommand != "closeProject") {
+          // Retry the connection
+          state.lastDir = ""
+          state.updateProject()
+
+          // Resend the last command that just failed
+          language.send(state.lastCommand)
+        }
         break;
       case Codes.NO_BUILD_RUNNING:
         notify.warning("No Gradle build is running")
@@ -306,7 +314,7 @@ connector = { // Lifecycle and API
   cancel: () => language.send("cancel"),
   hardCancel: () => process.kill(),
   closeProject: () => {
-    language.sendCommand("closeProject")
+    language.send("closeProject")
     state.lastDir = ""
     queue.waitFor(Codes.PROJECT_CLOSED)
   },

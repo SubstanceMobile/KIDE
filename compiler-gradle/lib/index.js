@@ -24,26 +24,30 @@ module.exports = {
       }))
 
       this.subscriptions.add(atom.commands.add("atom-workspace", {
-        'build:run': () => service.runTask(atom.config.get("compiler-gradle.tasks.runTask")), // TODO: Interactive
-        'build:debug': () => notify.error("Debug support coming soon!"),
-        'build:release': () => service.runTask(atom.config.get("compiler-gradle.tasks.releaseTask")),
-        'build:tasks': () => service.getTasks().then(data => taskPick(data, tasks => service.runTask(tasks))),
-        'build:wrapper': () => service.runTask("wrapper"),
-        'build:reload': () => {
+        'gradle:run': () => service.runTask(atom.config.get("compiler-gradle.tasks.runTask")), // TODO: Interactive
+        'gradle:debug': () => notify.error("Debug support coming soon!"),
+        'gradle:release': () => service.runTask(atom.config.get("compiler-gradle.tasks.releaseTask")),
+        'gradle:tasks': () => service.getTasks().then(data => taskPick(data, tasks => service.runTask(tasks))),
+        'gradle:wrapper': () => service.runTask("wrapper"),
+        'gradle:reload': () => {
+          spinner.status("Reloading Gradle...")
           service.hardCancel()
           service.activate()
         },
-        'build:stop': () => service.cancel(),
-        'build:hard-stop': () => service.hardCancel()
+        'gradle:stop': () => service.cancel(),
+        'gradle:force-stop': () => service.hardCancel()
       })); //TODO: Hooks to allow other plugins to manage some of this behaviour (for example, SDK plugin inserting a platform picker into Substance SDK projects)
   },
 
   consumeBusySignal: signal => spinner.init(signal),
 
   deactivate: () => {
+    notify.success("hello")
+
     service.deactivate();
     notify.deactivate();
     output.deactivate();
+
     spinner.stop()
     this.subscriptions.dispose(); // Release resources
   }

@@ -2,7 +2,7 @@
   "name": "compiler-gradle",
   "version": "0.0.0",
   "main": "./lib/index",
-  "description": "Provides Gradle integration with Atom and the KIDE",
+  "description": "Provides Gradle integration with Atom and KIDE",
   "repository": "https://github.com/SubstanceMobile/KIDE/tree/master/compiler-gradle",
   "license": "MIT",
   "engines": {
@@ -20,11 +20,6 @@
     "atom-ide-busy-signal": {
       "versions": {
         "0.1.0": "consumeBusySignal"
-      }
-    },
-    "output-panel": {
-      "versions": {
-        "1.0.0": "consumeRunner"
       }
     }
   },

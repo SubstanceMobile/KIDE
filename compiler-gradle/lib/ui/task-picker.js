@@ -1,7 +1,6 @@
 const SelectList = require('atom-select-list')
 
 module.exports = (tasks, clbk) => {
-    console.log(tasks)
     close = () => {
       list.destroy()
       panel.destroy()
