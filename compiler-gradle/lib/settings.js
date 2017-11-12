@@ -6,13 +6,14 @@ module.exports = {
     description: "Errors will always be displayed",
     order: 1
   },
+  /*
   wrapper: { // TODO: Check
     type: 'boolean',
     default: true,
     title: "Use gradlew",
     description: "Use the Gradle Wrapper if it is present in the current project. This allows projects designed for older versions of Gradle to compile properly.",
     order: 2
-  },/*
+  },
   nightly: { // TODO
     type: 'boolean',
     default: false,
@@ -20,9 +21,15 @@ module.exports = {
     description: "Use nightly builds of Gradle",
     order: 3
   },*/
+  gradleVersion: {
+    type: 'string',
+    default: 'auto',
+    description: 'Use \'auto\' to automatically determine the correct Gradle version for a project (recommended)',
+    order: 4
+  },
   tasks: {
     type: 'object',
-    order: 4,
+    order: 5,
     properties: {
       runTask: {
         type: 'string',

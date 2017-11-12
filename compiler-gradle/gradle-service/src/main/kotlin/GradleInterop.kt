@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
       val data = ln.split(";").drop(1).joinToString(";").trim()
 
       // Command structure:
-      // command, flag, flag, parameter:data, parameter=data2; dataForCommand
+      // command, flag, flag, parameter:data, parameter:data2; dataForCommand
       // ^(req)   ^(called modifiers, optional               ) ^(optional   )
       // Notes:
       //    command cannot contain semicolons or commas, but can contain colons

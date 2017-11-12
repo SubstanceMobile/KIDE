@@ -33,6 +33,6 @@ module.exports = {
   },
 
   deactivate: function () {
-    this.listener.despose();
+    this.listener.dispose();
   }
 }

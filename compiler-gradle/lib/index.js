@@ -1,4 +1,4 @@
-const {CompositeDisposable} = require('atom');
+CompositeDisposable = require('atom').CompositeDisposable;
 const path = require('path');
 
 // UI
@@ -10,24 +10,32 @@ const notify = require('./notify');
 const spinner = require('./spinner');
 const service = require('./service');
 
-module.exports = {
+module.exports = index = {
   config: require("./settings.js"),
+  subscriptions: undefined,
   activate: () => {
-      this.subscriptions = new CompositeDisposable();
+      index.subscriptions = new CompositeDisposable();
 
       notify.activate();
-      setTimeout(service.activate, 1000) // Give the IDE a second to suppress errors
+      setTimeout(service.activate, 1000) // Give the IDE a second to suppress build errors
       output.activate()
 
-      this.subscriptions.add(atom.workspace.onDidChangeActiveTextEditor(editor => {
-        if (editor == undefined) service.closeProject(); else service.updateProject();
+      index.subscriptions.add(atom.workspace.onDidChangeActiveTextEditor(editor => {
+        if (editor == undefined) {
+          service.closeProject();
+          output.hide()
+        } else {
+          service.updateProject();
+          output.unhide()
+        }
       }))
 
-      this.subscriptions.add(atom.commands.add("atom-workspace", {
+      index.subscriptions.add(atom.commands.add("atom-workspace", {
         'gradle:run': () => service.runTask(atom.config.get("compiler-gradle.tasks.runTask")), // TODO: Interactive
         'gradle:debug': () => notify.error("Debug support coming soon!"),
         'gradle:release': () => service.runTask(atom.config.get("compiler-gradle.tasks.releaseTask")),
         'gradle:tasks': () => service.getTasks().then(data => taskPick(data, tasks => service.runTask(tasks))),
+        'gradle:get-current-version': () => service.getGradleVersion().then(ver => notify.info(`This project uses Gradle ${ver}`)),
         'gradle:wrapper': () => service.runTask("wrapper"),
         'gradle:reload': () => {
           spinner.status("Reloading Gradle...")
@@ -49,6 +57,6 @@ module.exports = {
     output.deactivate();
 
     spinner.stop()
-    this.subscriptions.dispose(); // Release resources
+    index.subscriptions.dispose(); // Release resources
   }
 };

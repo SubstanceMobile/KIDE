@@ -13,6 +13,8 @@ module.exports = output = {
     pane.setSummary({summary: ""}) // Hide the summary text
     pane.updateScroll() // Scroll to bottom
   },
+  hide: () => pane.hide(),
+  unhide: () => pane.show(),
   open: () => pane.unfold(),
   close: () => { // TODO: Cancel timeout on hover
     if (!pane.folded) pane.toggle()
@@ -47,6 +49,7 @@ module.exports = output = {
   },
   deactivate: () => {
     pane.close()
+    pane = undefined
     tooltip.dispose()
   }
 }

@@ -1,6 +1,7 @@
 // Library Imports
 const {BufferedProcess} = require('atom');
 const path = require('path');
+const fs = require('fs-plus');
 const issue = require('github-create-issue');
 
 // Local imports
@@ -81,13 +82,14 @@ language = { // Language processing
         // Ignored
         break;
       default:
-        if (!state.isBuildingClient) notify.error("Gradle client issued an invalid command", {
+        if (!state.ignoreCommand) notify.error("Gradle client issued an invalid command", {
           detail: `Command: ${command}`,
           buttons: [{
               text: "Report issue",
               onDidClick: () => postIssue("Invalid Command Recieved", `Command recieved: ${command}`)
           }]
         })
+        if (state.ignoreCommand) state.specialParsing(input)
         break;
     }
   },
@@ -97,7 +99,12 @@ language = { // Language processing
     state.history += command
     process.proc.process.stdin.write(command)
   },
-  send: command => queue.add(command)
+  send: command => queue.add(command),
+  buildCommand: (command, modifiers, data) => {
+    for (mod of modifiers) command += `, ${mod}`
+    command += `; ${data}`
+    return command
+  }
 }
 
 queue = { // Command queue
@@ -117,23 +124,55 @@ queue = { // Command queue
 state = { // State management
   // Run state
   isReady: false, // If the tool is running enough to recieve commands
-  isBuildingClient: false, // = ignore invalid commands
+  stopping: false,
 
   // Command management
   history: "", // The history of all transactions
   lastCommand: "", // The last command sent
   queueListener: -1, // The ID for the interval that issues commands from the queue
+  ignoreCommand: false,
 
   // Project management
   projectClosed: true,
   lastDir: "", // The last open directory
+  findCurrentProject: () => {
+    // Find the project directory
+    dir = atom.workspace.getActiveTextEditor().getPath()
+    do {
+      dir = path.dirname(dir)
+      files = fs.listSync(dir)
+      complete = files.includes(path.join(dir, "build.gradle.kts")) ||
+                 files.includes(path.join(dir, "build.gradle")) ||
+                 atom.project.getDirectories().map(it => it.getPath()).includes(dir)
+    } while (!complete);
+    return dir
+  },
   updateProject: () => {
-    dir = path.dirname(atom.workspace.getActiveTextEditor().getPath())
+    // Find the directory
+    dir = state.findCurrentProject()
     if (dir == state.lastDir) return
     state.lastDir = dir
-    language.send(`project; ${dir}`) // TODO: Version
+
+    // Version management
+    modifiers = []
+    configVersion = atom.config.get("compiler-gradle.gradleVersion")
+    if (configVersion != "auto") modifiers.push(`version:${configVersion}`)
+    state.ignoreCommand = true // Suppress command errors
+    state.downloading = true
+    state.specialParsing = line => { // Give some output for Gradle downloading
+      if (!line.startsWith(".....")) console.log(`[Gradle Client] ${line}`)
+      if (line.includes("Downloading")) spinner.status("Downloading Gradle...")
+      if (line.includes("Unzipping")) spinner.status("Unzipping Gradle...")
+      if (line.includes("Set executable permissions for:")) spinner.stop()
+    }
+
+    language.send(language.buildCommand("project", modifiers, dir))
     queue.waitFor(Codes.PROJECT_OPENED)
   },
+
+  // Version management
+  specialParsing: line => {}, // Allow parsing errors
+  downloading: false,
 
   // Return management
   lastReturn: "", // The last return value sent to the IDE
@@ -176,14 +215,14 @@ impl = { // Command implementations
         break;
       case Codes.BUILDING:
         spinner.status("Configuring Gradle...")
-        state.isBuildingClient = true
+        state.ignoreCommand = true
         break;
       case Codes.CANCELLING_BUILD:
         spinner.status("Stopping Build")
         break;
       case Codes.RUNNING:
         setTimeout(() => {
-          state.isBuildingClient = false // Stop ignoring invalid output
+          state.ignoreCommand = state.downloading // Stop ignoring invalid output (unless downloading)
         }, 1000) // Allow time to flush out buffers
         break;
       case Codes.PROJECT_CLOSED:
@@ -191,6 +230,9 @@ impl = { // Command implementations
         break;
       case Codes.PROJECT_OPENED:
         state.projectClosed = false
+
+        state.ignoreCommand = false // Stop ignoring "downloading" output
+        state.downloading = false
         break;
       case Codes.BUILD_STARTING:
       default:
@@ -270,7 +312,7 @@ process = { // Process manipulation
       exit: code => {
         console[(code == 0) ? "log" : "error"](`[Gradle Client] Exit: ${code}`)
         spinner.stop() // Stop any ongoing output
-        process.run() // Restart the server
+        if (!state.stopping) process.run() // Restart the server
       }
     })
     process.manipulateInputs()
@@ -300,7 +342,10 @@ connector = { // Lifecycle and API
 
   // Lifecycle
   activate: process.run,
-  deactivate: () => language.send("done"),
+  deactivate: () => {
+    state.stopping = true
+    language.send("done")
+  },
 
   // API
   updateProject: state.updateProject,
