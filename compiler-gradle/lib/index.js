@@ -44,14 +44,15 @@ module.exports = index = {
         },
         'gradle:stop': () => service.cancel(),
         'gradle:force-stop': () => service.hardCancel()
-      })); //TODO: Hooks to allow other plugins to manage some of this behaviour (for example, SDK plugin inserting a platform picker into Substance SDK projects)
+      }));
+
+      //TODO: Hooks to allow other plugins to manage some of this behaviour (for example, SDK plugin inserting a platform picker into Substance SDK projects)
+      //TODO: Task Provider: an object that provides various default tasks based on project types (from external plugins)
   },
 
   consumeBusySignal: signal => spinner.init(signal),
 
   deactivate: () => {
-    notify.success("hello")
-
     service.deactivate();
     notify.deactivate();
     output.deactivate();

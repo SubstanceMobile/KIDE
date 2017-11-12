@@ -135,8 +135,7 @@ state = { // State management
   // Project management
   projectClosed: true,
   lastDir: "", // The last open directory
-  findCurrentProject: () => {
-    // Find the project directory
+  findCurrentProject: () => { // Finds the nearest Gradle project or atom project
     dir = atom.workspace.getActiveTextEditor().getPath()
     do {
       dir = path.dirname(dir)
@@ -312,10 +311,13 @@ process = { // Process manipulation
       exit: code => {
         console[(code == 0) ? "log" : "error"](`[Gradle Client] Exit: ${code}`)
         spinner.stop() // Stop any ongoing output
+        clearInterval(state.queueListener)
         if (!state.stopping) process.run() // Restart the server
       }
     })
     process.manipulateInputs()
+
+    queue.waitFor(Codes.RUNNING) // Do not execute any commands until the service is running
     process.queueListen()
   },
   queueListen: () => {
@@ -330,6 +332,7 @@ process = { // Process manipulation
   kill: () => {
     console.log("[Gradle Client] Forcibly stopping service")
     process.proc.kill()
+    clearInterval(state.queueListener)
   }
 }
 
