@@ -1,0 +1,7 @@
+AnalysisEnvironment.kt and CoreProjectFileIndex.kt are pulled directly from https://github.com/Kotlin/dokka/tree/master/core/src/main/kotlin/Analysis
+They are used as an entry point into the Kotlin compiler
+
+To keep things simple, these files were not modified in any way
+They will periodically be updated to keep up with the upstream repository
+
+Dokka's license is included in this folder
