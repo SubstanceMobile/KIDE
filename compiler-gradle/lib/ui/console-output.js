@@ -16,7 +16,7 @@ module.exports = output = {
   hide: () => pane.hide(),
   unhide: () => pane.show(),
   open: () => pane.unfold(),
-  close: () => { // TODO: Cancel timeout on hover
+  close: () => {
     if (!pane.folded) pane.toggle()
   },
   toggle: () => pane.toggle(),
