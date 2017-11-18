@@ -1,0 +1,21 @@
+{
+  "name": "kide-base",
+  "version": "0.0.0",
+  "main": "./lib/index",
+  "description": "Provides updates and functionality to the KIDE",
+  "repository": "https://github.com/SubstanceMobile/KIDE/tree/master/compiler-gradle",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "keywords": [
+    "KIDE",
+    "gradle",
+    "kotlin"
+  ],
+  "consumedServices": {
+  },
+  "dependencies": {
+    
+  }
+}
