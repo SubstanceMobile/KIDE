@@ -1,19 +1,25 @@
 package kide
 
+import kide.types.*
+
+//TODO: Remove
 import org.jetbrains.kotlin.descriptors.ClassKind
-//Possible??? import org.jetbrains.kotlin.descriptors.*
+
+
 
 fun mapResults(results: AnalysisResult) {
-   for (property in results.getProperties().asIterable()) {
-      println("Property: " + property.value.getName())
-      println("   Type: " + property.value.getType().constructor.getDeclarationDescriptor()?.getName())
-      println("   Mutable: " + property.value.isVar())
-      println("   Constant: " + property.value.isConst())
-      println("   Default value: " + property.value.getCompileTimeInitializer()?.toString())
-   }
+   for ((psi, descriptor) in results.getProperties()) println(parseProperty(psi, descriptor))
+   println()
 
-   println() // Give space b/t properties and classes
+   //for ((psi, descriptor) in results.getDeclaredClasses()) println(parseClass(psi, descriptor))
+   //println()
+
+   //for ((psi, descriptor) in results.getFunctions()) println(parseFunction(psi, descriptor))
+   //println()
+
+   println() // Give space b/t properties and classess
    for (clazz in results.getDeclaredClasses().asIterable()) {
+      // When parsing documentation, make sure to get property and construtor sections
       println("Class: " + clazz.value.getName())
       println("   Data: " + clazz.value.isData())
       println("   isCompanion: " + clazz.value.isCompanionObject())
